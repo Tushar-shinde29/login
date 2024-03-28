@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <title>registration</title>
+        <link rel="stylesheet" href="../registration.css">
+    </head>
+    <body>
+        <div class="registration" id="re">
+            <form id="reg">
+                <h2>REGISTRATION</h2>
+            <table>
+                <tr>
+                <td><label for="fname">Firstname</label></td>
+                <td><input type="text" name="fname" id="fname" value=""><span id="ferror"></span></td>
+                </tr>
+                <tr>
+                <td><label for="lname">Last name</label></td>
+                <td><input type="text" name="lname" id="lname" value=""><span id="lnerror"></span></td>
+                </tr>
+                <tr>
+                <td><label for="email">Email</label></td>
+                <td><input type="text" name="email" id="email" value=""><span id="mailerror"></span></td>
+                </tr>
+                <tr>
+                    <td><label for="uname">username</label></td>
+                    <td><input type="text" name="username" id="username" value=""><span id="unameerror"></span></td>
+                </tr>
+            </table>
+            <button type="button" name="submit" value="submit" onclick="register()">REGISTER</button>
+            <p id="log" onclick="lp()">already account : LOGIN</p>
+            <p id="error"></p>
+        </div>
+    </form>
+    <script src="registration.js"></script>
+</body>
+</html>
