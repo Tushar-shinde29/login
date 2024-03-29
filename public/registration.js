@@ -82,7 +82,7 @@ async function register()
         var ex=await checkuser();
         if(ex.msg=="ok")
         {
-            document.getElementById('error').innerHTML="ur registration is completed and ur activation link is "+`<a href="/createpassword/?code=${ex.code}">http://localhost:8520/createpassword/?code=${ex.code}</a>`;
+            document.getElementById('error').innerHTML="ur registration is completed and ur activation link is "+`<a href="/createpassword/?code=${ex.code}">http://localhost:8080/createpassword/?code=${ex.code}</a>`;
         }
         else
         {
@@ -138,13 +138,18 @@ async function login()
             }
             else
             {
-                document.getElementById('lerror').innerHTML=`username : ${p.data[0].username} , firstname : ${p.data[0].fname} , lastname : ${p.data[0].lname}`;
+                // document.getElementById('lerror').innerHTML=`username : ${p.data[0].username} , firstname : ${p.data[0].fname} , lastname : ${p.data[0].lname}`;
+                const d = new Date();
+                d.setTime(d.getTime() + (30*1000));
+                let expires = "expires="+ d.toUTCString();
+                document.cookie=`token=${p.token};${expires};path=/home`;
+                window.location.href="/home";
             }
 
         }
         else if(p.msg=="inactive")
         {
-            document.getElementById('lerror').innerHTML=`you are registerd but you are not set password so click on this link <a href='/createpassword/?code=${p.newcode}'>click here</a>`;
+            document.getElementById('lerror').innerHTML=`you are registerd but you are not set password so click on this link <a href='/active'>click here</a>`;
         }
         else if(p.msg=="error")
         {
@@ -153,7 +158,27 @@ async function login()
     }
 }
 
+async function activatelink(){
+    var form = document.getElementById("ac");
+    const data = new URLSearchParams(new FormData(form));
+    // console.log("data",data);
+    var op = await fetch('/activatelink', { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: data}).then(response => res=response.json());
+    return res;
+}
 
+async function activate()
+{
+    var ac=await activatelink();
+    console.log(ac);
+    if(ac.msg=="newcode")
+    {
+        document.getElementById('aerror').innerHTML="ur new activation link is "+`<a href="/createpassword/?code=${ac.newcode}">http://localhost:8080/createpassword/?code=${ac.newcode}</a>`;
+    }
+    else
+    {
+        document.getElementById('aerror').innerHTML=ac.data;
+    }
+}
 
 async function setpassword()
 {
