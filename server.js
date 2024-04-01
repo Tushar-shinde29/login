@@ -15,12 +15,8 @@ app.use(bodyparser.urlencoded({ extended: true }))
 app.use(bodyparser.json());
 
 
-try {
-    app.use(cookieParser());
+app.use(cookieParser());
     
-} catch (error) {
-    console.log(error);
-}
 
 var con = mysql.createConnection({ host: "localhost", user: "root", password: "root", database: 'job_app', multipleStatements: true });
 con.connect(function (err) {
@@ -60,9 +56,7 @@ function activationcode() {
 }
 
 
-
-
-app.all('/setpassword', async (req, res) => {
+const setpassword= async (req, res) => {
     var data = req.body;
     var s = salt();
     var code = req.body.accode;
@@ -89,9 +83,10 @@ app.all('/setpassword', async (req, res) => {
         res.setHeader('content-Type', 'application/json');
         res.json({ "msg": "your link is expired" });
     }
-});
+};
 
-app.post('/checkuser', async (req, res) => {
+
+const checkuser=async (req, res) => {
     var data = req.body;
     var fname = data.fname;
     var lname = data.lname;
@@ -129,9 +124,11 @@ app.post('/checkuser', async (req, res) => {
         res.setHeader('content-Type', 'application/json');
         res.json({ "msg": "ok", "code": `${code}` });
     }
-});
+};
 
-app.post('/login', async (req, res) => {
+
+
+const login1= async (req, res) => {
     data = req.body;
     var username = req.body.uname;
     var password = req.body.password;
@@ -179,18 +176,15 @@ app.post('/login', async (req, res) => {
 
     }
 
-});
-try {
-    app.get('/', (req, res) => {
-        console.log("ok");
-        res.render('registration');
-    });
+};
 
-} catch (error) {
-    console.log(error);
-}
 
-app.get('/createpassword',async (req,res)=>{
+const registration=(req, res) => {
+    res.render('registration');
+};
+
+
+const createpassword=async (req,res)=>{
     var sp=url.parse(req.url,true).query;
     var q1=`select username,created_at,update_at from users where activationcode='${sp.code}'`;
         var d=[];
@@ -205,17 +199,20 @@ app.get('/createpassword',async (req,res)=>{
         // {
             res.render('createpassword');
         // }
-});
+};
 
-app.get('/active',(req,res)=>{
+
+
+const active=(req,res)=>{
     res.render('activate');
-})
+};
 
-app.all('/activatelink',async (req,res)=>{
+const activatelink=async (req,res)=>{
     let name=req.body.uname;
+    console.log(name);
      // console.log(q);
      var q = `select * from users where username='${name}'`;
-     // console.log(q);
+     console.log(q);
      result2 = await execute(q, d);
     if(result2.length>0)
     {
@@ -230,8 +227,11 @@ app.all('/activatelink',async (req,res)=>{
         res.setHeader('content-Type', 'application/json');
         res.json({ "msg": "nocode", "data": 'you are not registerd yet pls register first'});
     }
-});
+};
+
+
 const  verify=(req,res,next)=>{
+    // console.log(req);
     if(!(req.cookies.token))
     {
         res.render('login');
@@ -242,24 +242,31 @@ const  verify=(req,res,next)=>{
     }
 
 };
-
-app.get('/login', (req, res) => {
+const login=(req, res) => {
     res.render('login');
-});
-
-app.get('/home',verify, (req, res) => {
-    try {
-        // console.log("cokkie is : "+req.cookies.token);
-        
-    } catch (error) {
-        console.log(error);
-    }
-    res.render('home'); 
-});
+};
 
 
+const home=(req, res) => {
+        try {
+            // console.log("cokkie is : "+req.cookies.token);
+            
+        } catch (error) {
+            console.log(error);
+        }
+        res.render('home'); 
+};
 
 
-app.listen(8080, (err) => {
-    if (err) throw err;
-});
+
+module.exports={
+    setpassword,
+    home,verify,
+    login,
+    activatelink,
+    active,
+    createpassword,
+    registration,
+    login1,
+    checkuser,
+}
